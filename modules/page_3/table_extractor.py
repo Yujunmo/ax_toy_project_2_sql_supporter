@@ -15,12 +15,12 @@ from typing import List
 from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent 
 import ast
+import streamlit as st
 
-LLM = ChatOpenAI(model='gpt-5.4-nano' )
+LLM = ChatOpenAI(model='gpt-5.4-nano' , api_key = st.secrets["OPENAI_API_KEY"])
 #SMALL_LLM = ChatOpenAI(model='gpt-5.4-mini')
 #FAST_LLM = ChatOpenAI(model='gpt-5.4-nano')
 
-load_dotenv()
 
 class AgentState(TypedDict):
     query : str

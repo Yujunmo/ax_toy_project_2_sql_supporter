@@ -13,11 +13,11 @@ from langgraph.graph import StateGraph, START,END
 from pydantic import BaseModel, Field
 from typing import List
 from modules.page_3.table_extractor import graph as table_list_extractor
+import streamlit as st
+#load_dotenv()
 
-load_dotenv()
-
-LLM = ChatOpenAI(model='gpt-5.4' )
-SMALL_LLM = ChatOpenAI(model='gpt-5.4-mini')
+LLM = ChatOpenAI(model='gpt-5.4' , api_key = st.secrets["OPENAI_API_KEY"])
+SMALL_LLM = ChatOpenAI(model='gpt-5.4-mini', api_key = st.secrets["OPENAI_API_KEY"])
 
 class AgentState(TypedDict):
     router_result : Literal['LLM', 'sql']
@@ -30,7 +30,6 @@ class RouteType(BaseModel):
     target: Literal['sql', 'LLM'] = Field(description='The target for the query to answer')
 
 
-# 노드 
 def router(state:AgentState) -> Literal['LLM','sql']:
 
     structured_router_LLM = SMALL_LLM.with_structured_output(RouteType)
@@ -54,8 +53,9 @@ def router(state:AgentState) -> Literal['LLM','sql']:
     return rs_route.target
 
 def call_LLM(state:AgentState) -> AgentState:
+    # sql 반영과 관련 없는 질의 처리 노드 
     print("call_LLM called")
-    # 일반 질문 처리 LLM    
+    
     user_request = '아래 요청내용이 sql에 db link를 반영하는 것과 관련이 없으면, 관련해서 다시 질문해달라고 요청해주세요.\
         별도로 사용자에게 추가로 무언가를 해주겠다고 제안하지 마세요.'
     user_request += state['sql'] + " " + state['db_link']
@@ -67,12 +67,15 @@ def call_LLM(state:AgentState) -> AgentState:
 
 
 def table_name_extractor(state:AgentState) -> AgentState:
+    # 테이블 리스트 추출하는 노드
     print("table_name_extractor called")
+
     result = table_list_extractor.invoke({'query' : state['sql']})
     return {'table_list' : result['branch_A_answer'], 'router_result' : "LINK_INSERTER" }
 
 
 def db_link_inserter(state:AgentState) -> AgentState:
+    # 링크 주입 노드
     print("db_link_inserter called")
 
     # 사용자가 입력한 db link가 '@'로 시작하지 않으면 붙여주기

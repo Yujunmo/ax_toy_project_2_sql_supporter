@@ -10,10 +10,11 @@ from typing import TypedDict, Literal
 from langgraph.graph import StateGraph, START,END
 from pydantic import BaseModel, Field
 from typing import List
+import streamlit as st
 load_dotenv()
 
 MAX_RETRY = 3
-LLM = ChatOpenAI(model='gpt-5.4' )
+LLM = ChatOpenAI(model='gpt-5.4',  api_key =st.secrets["OPENAI_API_KEY"] )
 SMALL_LLM = ChatOpenAI(model='gpt-5.4-mini')
 
 class Counter:
