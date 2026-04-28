@@ -32,8 +32,6 @@ class Counter:
         Counter.count = 0
 
 
-
-
 class AgentState(TypedDict):
     router_result : Literal['LLM', 'sql']
     query : str

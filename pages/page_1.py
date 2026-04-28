@@ -1,5 +1,4 @@
 import streamlit as st
-import css
 from modules.page_1.link_injector import graph
 from modules.page_1.funcs import verification, verification_2
 
