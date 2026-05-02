@@ -46,7 +46,7 @@ def table_extract_node(state: AgentState) -> list[Table]:
     result = LLM.with_structured_output(TableList).invoke(table_extract_prompt)
     
     # Table 객체 리스트 → 문자열 리스트로 변환
-    return {f'branch_{branch}_answer': [table.table_name for table in result.tables]}
+    return {f'branch_{branch}_answer': sorted([table.table_name for table in result.tables])}
     
 
 # 검증 노드
@@ -56,7 +56,7 @@ def verification_node(state:AgentState) -> AgentState:
     print(f'branch_A_answer: {state["branch_A_answer"]}')
     print(f'branch_B_answer: {state["branch_B_answer"]}')
 
-    return {'verification': sorted(state['branch_A_answer']) == sorted(state['branch_B_answer'])}
+    return {'verification': (state['branch_A_answer']) == (state['branch_B_answer'])}
 
 def router_node(state:AgentState) :
     return state['verification']
