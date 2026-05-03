@@ -14,20 +14,24 @@ st.markdown("""
     --shinhan-light: #E8F1FB;
 }
 
-/* 버튼 스타일 */
+/* 버튼 스타일 - 흰색 배경에 신한 파란색 테두리 */
 button {
-    background-color: #0054A4 !important;
-    color: white !important;
-    border: none !important;
+    background-color: white !important;
+    color: #0054A4 !important;
+    border: 2px solid #0054A4 !important;
+    font-weight: 600 !important;
 }
 
 button:hover {
-    background-color: #003D7A !important;
-    box-shadow: 0 4px 12px rgba(0, 84, 164, 0.3) !important;
+    background-color: #E8F1FB !important;
+    border-color: #0054A4 !important;
+    box-shadow: 0 2px 8px rgba(0, 84, 164, 0.15) !important;
 }
 
 button:active {
-    background-color: #002D5A !important;
+    background-color: #D1E3F7 !important;
+    border-color: #003D7A !important;
+    color: #003D7A !important;
 }
 
 /* 메트릭 카드 스타일 */
@@ -60,7 +64,7 @@ h1 {
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🏦 데이터 이관 도구 - 신한금융")
+st.title("데이터 이관 도구")
 
 # ===== 상단 입력 섹션 =====
 st.markdown("---")
