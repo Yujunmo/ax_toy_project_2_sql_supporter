@@ -87,9 +87,9 @@ with col2:
     fund_code = st.text_input(
         "펀드코드",
     )
-    btn_col3, btn_col4 = st.columns(2)
+    btn_col3, btn_col4 = st.columns(2)     
     with btn_col3:
-        pass  # 이관하기 버튼은 생성된 SQL 섹션에 배치
+        execute_all_button = st.button("이관하기", use_container_width=True)
     with btn_col4:
         reset_button = st.button("초기화", use_container_width=True)
 
@@ -212,6 +212,14 @@ if generate_button:
         
     else:
         try:
+            # 기존 SQL 데이터 삭제
+            if 'sql_statements' in st.session_state:
+                del st.session_state.sql_statements
+            if 'sql_edits' in st.session_state:
+                del st.session_state.sql_edits
+            if 'sql_selections' in st.session_state:
+                del st.session_state.sql_selections
+
             with st.spinner("SQL 작성 중.."):
                 sql_statements = generate_sql_statements(
                     extracted_tables=st.session_state.extracted_tables,
@@ -231,7 +239,7 @@ if generate_button:
                 # 하단 그리드 초기화 (체크박스 상태)
                 st.session_state.sql_selections = [True] * len(sql_statements)
 
-            st.toast("✓ SQL 작성 완료!", icon="✅")
+            st.toast("✓ 기존 SQL 삭제 후 새로운 SQL 작성 완료!", icon="✅")
             st.rerun()
 
         except Exception as e:
@@ -241,11 +249,7 @@ if generate_button:
 # ===== 생성된 SQL 표시 =====
 if 'sql_statements' in st.session_state and st.session_state.sql_statements:
     st.markdown("---")
-    col_title, col_btn = st.columns([3, 1])
-    with col_title:
-        st.subheader("생성된 SQL")
-    with col_btn:
-        execute_all_button = st.button("이관하기", use_container_width=True, key="execute_all_main")
+    st.subheader("생성된 SQL")
 
     # SQL 데이터 준비
     sql_data = []
