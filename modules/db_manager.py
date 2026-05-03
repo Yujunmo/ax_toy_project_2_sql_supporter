@@ -460,7 +460,7 @@ def get_table_list() -> List[str]:
         'tru_stck_itms_ht',
         'tru_stck_itms_ht_t',
         'tru_fund_infr_bs',
-        'tru_fund_infr_bs_t',        
+        'tru_fund_infr_bs_t',
         'pfo_stck_ma',
         'pfo_stck_ma_t',
         'pfo_clfd_revs_stpr_ma',
@@ -470,6 +470,21 @@ def get_table_list() -> List[str]:
         'pfo_clfd_mip_ma',
         'pfo_clfd_mip_ma_t'
     ]
+
+def get_source_tables() -> List[str]:
+    """원본 테이블(기존 테이블) 목록 반환"""
+    return [
+        'pfo_stck_ma',
+        'pfo_fund_infr_ht',
+        'pfo_clfd_revs_stpr_ma',
+        'pfo_clfd_mip_ma',
+        'tru_fund_infr_bs',
+        'tru_stck_itms_ht'
+    ]
+
+def get_target_table(source_table: str) -> str:
+    """원본 테이블에 대응하는 타겟 테이블명 반환"""
+    return f"{source_table}_t"
 
 def get_table_pk_columns(table_name: str) -> List[str]:
     """테이블의 PRIMARY KEY 컬럼 목록 반환"""
