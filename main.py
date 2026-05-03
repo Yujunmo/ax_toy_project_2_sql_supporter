@@ -1,5 +1,4 @@
 import streamlit as st
-import css
 from modules.db.manager import init_db
 
 init_db()
