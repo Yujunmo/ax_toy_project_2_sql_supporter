@@ -2,3 +2,4 @@
 .venv/
 test*
 secrets.toml
+data_migration.db
