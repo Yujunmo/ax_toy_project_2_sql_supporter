@@ -257,6 +257,77 @@ def insert_sample_data_new_tables():
     print(f"   • tru_fund_infr_bs: 4건")
     print(f"   • tru_stck_itms_ht: 32건")
 
+def extend_tru_stck_itms_ht():
+    """tru_stck_itms_ht를 3월 5일 ~ 4월 30일까지 확장"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    items = [
+        ('088160', '삼성전자'),
+        ('000660', 'SK하이닉스'),
+        ('035420', 'NAVER'),
+        ('035720', '카카오'),
+        ('051910', 'LG화학'),
+        ('005490', 'POSCO'),
+        ('096770', 'SK이노베이션'),
+        ('207940', '삼성바이오로직스'),
+    ]
+
+    base_prices = {
+        '088160': 71400,
+        '000660': 132300,
+        '035420': 386500,
+        '035720': 52800,
+        '051910': 789000,
+        '005490': 69200,
+        '096770': 187500,
+        '207940': 958000,
+    }
+
+    start_date = datetime(2026, 3, 5)
+    end_date = datetime(2026, 4, 30)
+
+    current_date = start_date
+    date_idx = 4
+
+    while current_date <= end_date:
+        proc_date = current_date.strftime('%Y%m%d')
+
+        for i, (item_code, item_name) in enumerate(items):
+            base_price = base_prices[item_code]
+            close_price = base_price * (1 + (0.02 - (i % 3) * 0.01)) + (date_idx * 100)
+
+            prdy_acqs_amt = 100000000 + (i * 5000000)
+            prdy_hold_stcn = 10000 + (i * 500)
+            incr_acqs_amt = 5000000 + (date_idx * 100000)
+            dcrs_acqs_amt = 2000000 + (date_idx * 50000)
+            incr_stcn = 500 + (date_idx * 10)
+            dcrs_stcn = 200 + (date_idx * 5)
+            hold_qty = prdy_hold_stcn + incr_stcn - dcrs_stcn
+            eval_amt = hold_qty * close_price
+
+            cursor.execute('''
+                INSERT INTO tru_stck_itms_ht
+                (proc_date, itms_code, itms_name, prdy_acqs_amt, prdy_hold_stcn,
+                 incr_acqs_amt, dcrs_acqs_amt, incr_stcn, dcrs_stcn,
+                 close_price, hold_qty, eval_amt, upd_dtm)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (proc_date, item_code, item_name, prdy_acqs_amt, prdy_hold_stcn,
+                  incr_acqs_amt, dcrs_acqs_amt, incr_stcn, dcrs_stcn,
+                  close_price, hold_qty, eval_amt, f'{proc_date}1530'))
+
+        current_date += timedelta(days=1)
+        date_idx += 1
+
+    conn.commit()
+    conn.close()
+
+    print(f"✅ tru_stck_itms_ht 데이터 확장 완료")
+    print(f"   기간: 2026-03-05 ~ 2026-04-30 (57일)")
+    print(f"   추가 레코드: 456건 (57일 × 8종목)")
+    print(f"   전체 tru_stck_itms_ht: 488건")
+
 if __name__ == "__main__":
     insert_sample_data()
     insert_sample_data_new_tables()
+    extend_tru_stck_itms_ht()
