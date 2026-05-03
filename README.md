@@ -36,28 +36,59 @@ SQL 쿼리에 dbLink를 자동으로 주입합니다.
 ## 📋 설치 및 실행
 
 ### 요구사항
-- Python 3.10+
-- Streamlit
-- LangChain
+- Python 3.14+
+- uv (또는 pip)
 - OpenAI API Key (또는 호환 LLM)
 
-### 설치
+### uv를 사용한 설치 (권장)
+
+#### 1. uv 설치
 ```bash
-pip install -r requirements.txt
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### 환경 설정
-`.env` 파일에 OpenAI API 키 설정:
+#### 2. 의존성 설치 및 환경 구성
 ```bash
+uv sync
+```
+→ `.venv/` 자동 생성 + 모든 의존성 설치
+
+#### 3. 환경변수 설정
+`.streamlit/secretes.toml` 파일에 파일에 OpenAI API 키 설정:
 OPENAI_API_KEY=sk-...
 ```
 
-### 실행
+#### 4. 앱 실행
 ```bash
-streamlit run main.py
+uv run streamlit run main.py
 ```
 
 앱은 `http://localhost:8501`에서 시작됩니다.
+
+---
+
+### pip를 사용한 설치 (legacy)
+
+#### 1. 가상환경 생성
+```bash
+python3.14 -m venv .venv
+source .venv/bin/activate  # macOS/Linux
+# 또는
+.venv\Scripts\activate  # Windows
+```
+
+#### 2. 의존성 설치
+```bash
+pip install -e .
+```
+
+#### 3. 환경변수 설정
+`.env` 파일에 OpenAI API 키 설정
+
+#### 4. 앱 실행
+```bash
+streamlit run main.py
+```
 
 ---
 
@@ -66,7 +97,9 @@ streamlit run main.py
 ```
 toy_2/
 ├── main.py                           # 메인 진입점 (페이지 네비게이션)
-├── requirements.txt                  # 의존성
+├── pyproject.toml                    # 프로젝트 메타데이터 + 의존성
+├── uv.lock                           # 의존성 lock 파일 (uv)
+├── .python-version                   # Python 3.14
 ├── data_migration.db                 # SQLite 데이터베이스
 │
 ├── pages/
@@ -208,6 +241,20 @@ def generate_sql_statements(...):
 --shinhan-primary: #YourColor;  # 기본 색상 변경
 ```
 
+### 새 의존성 추가 (uv 사용 시)
+```bash
+# 패키지 추가
+uv add package_name
+
+# 개발 전용 패키지 추가
+uv add --group dev package_name
+
+# 의존성 업데이트
+uv sync
+```
+
+pyproject.toml의 `[project.dependencies]` 또는 `[project.optional-dependencies.dev]`에 자동으로 추가됩니다.
+
 ---
 
 ## 📝 세션 상태 관리
@@ -244,4 +291,4 @@ MIT License
 
 ---
 
-**마지막 업데이트:** 2026-05-03
+**마지막 업데이트:** 2026-05-04 (uv 마이그레이션)
