@@ -205,6 +205,79 @@ def init_db():
         )
     ''')
 
+    # 이관 대상 테이블: 분류 수익률 및 기준가 (타겟)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS pfo_clfd_revs_stpr_ma_t (
+            mncm_code TEXT NOT NULL,
+            fund_code TEXT NOT NULL,
+            proc_date TEXT NOT NULL,
+            revs_stpr REAL,
+            bm_stpr REAL,
+            rnrt REAL,
+            bm_rnrt REAL,
+            currency_code TEXT,
+            upd_dtm TEXT,
+            PRIMARY KEY (mncm_code, fund_code, proc_date)
+        )
+    ''')
+
+    # 이관 대상 테이블: 분류 MIP 마스터 (타겟)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS pfo_clfd_mip_ma_t (
+            mncm_code TEXT NOT NULL,
+            fund_code TEXT NOT NULL,
+            proc_date TEXT NOT NULL,
+            nav_amt REAL,
+            prdy_nav_amt REAL,
+            tast_amt REAL,
+            debt_amt REAL,
+            cash_amt REAL,
+            stock_amt REAL,
+            currency_code TEXT,
+            upd_dtm TEXT,
+            PRIMARY KEY (mncm_code, fund_code, proc_date)
+        )
+    ''')
+
+    # 이관 대상 테이블: 신탁 펀드 정보 기본정보 (타겟)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tru_fund_infr_bs_t (
+            mncm_code TEXT NOT NULL,
+            fund_code TEXT NOT NULL,
+            fund_name TEXT,
+            firt_stup_date TEXT,
+            trm_date TEXT,
+            trmt_dncd TEXT,
+            trst_dncd TEXT,
+            fund_type TEXT,
+            currency_code TEXT,
+            manager_id TEXT,
+            risk_grade TEXT,
+            upd_dtm TEXT,
+            PRIMARY KEY (mncm_code, fund_code)
+        )
+    ''')
+
+    # 이관 대상 테이블: 신탁 종목 히스토리 (타겟)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tru_stck_itms_ht_t (
+            proc_date TEXT NOT NULL,
+            itms_code TEXT NOT NULL,
+            itms_name TEXT,
+            prdy_acqs_amt REAL,
+            prdy_hold_stcn REAL,
+            incr_acqs_amt REAL,
+            dcrs_acqs_amt REAL,
+            incr_stcn REAL,
+            dcrs_stcn REAL,
+            close_price REAL,
+            hold_qty REAL,
+            eval_amt REAL,
+            upd_dtm TEXT,
+            PRIMARY KEY (proc_date, itms_code)
+        )
+    ''')
+
     conn.commit()
     conn.close()
 
@@ -360,8 +433,12 @@ def query_table(table_name: str, limit: int = 5) -> tuple[List[Dict], str]:
         'pfo_fund_infr_ht_t',
         'pfo_clfd_revs_stpr_ma',
         'pfo_clfd_mip_ma',
+        'pfo_clfd_revs_stpr_ma_t',
+        'pfo_clfd_mip_ma_t',
         'tru_fund_infr_bs',
-        'tru_stck_itms_ht'
+        'tru_fund_infr_bs_t',
+        'tru_stck_itms_ht',
+        'tru_stck_itms_ht_t'
     ]
 
     if table_name not in allowed_tables:
@@ -380,14 +457,18 @@ def query_table(table_name: str, limit: int = 5) -> tuple[List[Dict], str]:
 def get_table_list() -> List[str]:
     """조회 가능한 테이블 목록 반환"""
     return [
-        'pfo_stck_ma',
-        'pfo_fund_infr_ht',
-        'pfo_stck_ma_t',
-        'pfo_fund_infr_ht_t',
-        'pfo_clfd_revs_stpr_ma',
-        'pfo_clfd_mip_ma',
+        'tru_stck_itms_ht',
+        'tru_stck_itms_ht_t',
         'tru_fund_infr_bs',
-        'tru_stck_itms_ht'
+        'tru_fund_infr_bs_t',        
+        'pfo_stck_ma',
+        'pfo_stck_ma_t',
+        'pfo_clfd_revs_stpr_ma',
+        'pfo_clfd_revs_stpr_ma_t',
+        'pfo_fund_infr_ht',
+        'pfo_fund_infr_ht_t',
+        'pfo_clfd_mip_ma',
+        'pfo_clfd_mip_ma_t'
     ]
 
 def get_table_pk_columns(table_name: str) -> List[str]:

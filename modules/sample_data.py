@@ -167,12 +167,12 @@ def insert_sample_data_new_tables():
     ]
 
     # 펀드 정보 삽입
-    for fund_code, fund_name, setup_date, term_date, term_yn, fund_type, curr, mgr_id, risk in funds:
+    for fund_code, fund_name, setup_date, term_date, term_yn, trst_dncd, fund_type, curr, mgr_id, risk in funds:
         cursor.execute('''
             INSERT OR REPLACE INTO tru_fund_infr_bs
             (mncm_code, fund_code, fund_name, firt_stup_date, trm_date, trmt_dncd, trst_dncd, fund_type, currency_code, manager_id, risk_grade, upd_dtm)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (mncm_code, fund_code, fund_name, setup_date, term_date, term_yn, fund_type, curr, mgr_id, risk, '202603041500'))
+        ''', (mncm_code, fund_code, fund_name, setup_date, term_date, term_yn, trst_dncd, fund_type, curr, mgr_id, risk, '202603041500'))
 
     # 처리일자별 데이터 생성
     start_date = datetime(2026, 3, 1)
@@ -186,8 +186,8 @@ def insert_sample_data_new_tables():
         proc_date = current_date.strftime('%Y%m%d')
 
         # pfo_clfd_revs_stpr_ma
-        base_returns = [0.85, 1.23, 0.92, -0.45]
-        for i, (fund_code, _, _, _, _, _, _, _, _) in enumerate(funds):
+        base_returns = [0.85, 1.23, 0.92, -0.45, 0.95, 0.75, 1.05, 0.65, 1.15, 0.80]
+        for i, (fund_code, _, _, _, _, _, _, _, _, _) in enumerate(funds):
             revs_stpr = 10000 + (date_idx * 100) + (i * 50)
             bm_stpr = 9500 + (date_idx * 90) + (i * 40)
             rnrt = base_returns[i] + (date_idx * 0.1)
@@ -200,7 +200,7 @@ def insert_sample_data_new_tables():
             ''', (mncm_code, fund_code, proc_date, revs_stpr, bm_stpr, rnrt, bm_rnrt, 'KRW', f'{proc_date}1530'))
 
         # pfo_clfd_mip_ma
-        for i, (fund_code, _, _, _, _, _, _, _, _) in enumerate(funds):
+        for i, (fund_code, _, _, _, _, _, _, _, _, _) in enumerate(funds):
             nav_amt = base_nav + (date_idx * 10000000) + (i * 5000000)
             prdy_nav_amt = nav_amt * 0.99
             tast_amt = nav_amt * 1.05
