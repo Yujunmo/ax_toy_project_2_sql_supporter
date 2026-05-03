@@ -12,7 +12,7 @@ from typing import TypedDict, Literal
 from langgraph.graph import StateGraph, START,END
 from pydantic import BaseModel, Field
 from typing import List
-from modules.page_3.table_extractor import graph as table_list_extractor
+from modules.agents.table_extractor import graph as table_list_extractor
 import streamlit as st
 #load_dotenv()
 

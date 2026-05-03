@@ -3,10 +3,11 @@ import os
 from typing import List, Dict, Optional
 import json
 
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data_migration.db')
+DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data_migration.db')
 
 def init_db():
     """SQLite 데이터베이스 초기화 및 테이블 생성"""
+    
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -163,6 +164,44 @@ def init_db():
             currency_code TEXT,
             upd_dtm TEXT,
             PRIMARY KEY (mncm_code, fund_code, proc_date)
+        )
+    ''')
+
+    # 포트폴리오 펀드 기본정보 (처리일자 없는 마스터)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS pfo_fund_bs (
+            mncm_code TEXT NOT NULL,
+            fund_code TEXT NOT NULL,
+            fund_name TEXT,
+            fund_type TEXT,
+            fund_status TEXT,
+            setting_date TEXT,
+            maturity_date TEXT,
+            nav_amt REAL,
+            base_price REAL,
+            currency_code TEXT,
+            manager_id TEXT,
+            upd_dtm TEXT,
+            PRIMARY KEY (mncm_code, fund_code)
+        )
+    ''')
+
+    # 이관 대상 테이블: 포트폴리오 펀드 기본정보 (타겟)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS pfo_fund_bs_t (
+            mncm_code TEXT NOT NULL,
+            fund_code TEXT NOT NULL,
+            fund_name TEXT,
+            fund_type TEXT,
+            fund_status TEXT,
+            setting_date TEXT,
+            maturity_date TEXT,
+            nav_amt REAL,
+            base_price REAL,
+            currency_code TEXT,
+            manager_id TEXT,
+            upd_dtm TEXT,
+            PRIMARY KEY (mncm_code, fund_code)
         )
     ''')
 
@@ -429,6 +468,8 @@ def query_table(table_name: str, limit: int = 5) -> tuple[List[Dict], str]:
     allowed_tables = [
         'pfo_stck_ma',
         'pfo_fund_infr_ht',
+        'pfo_fund_bs',
+        'pfo_fund_bs_t',
         'pfo_stck_ma_t',
         'pfo_fund_infr_ht_t',
         'pfo_clfd_revs_stpr_ma',
@@ -454,28 +495,68 @@ def query_table(table_name: str, limit: int = 5) -> tuple[List[Dict], str]:
         conn.close()
         return [], f"조회 오류: {str(e)}"
 
-def get_table_list() -> List[str]:
-    """조회 가능한 테이블 목록 반환"""
-    return [
-        'tru_stck_itms_ht',
-        'tru_stck_itms_ht_t',
-        'tru_fund_infr_bs',
-        'tru_fund_infr_bs_t',
-        'pfo_stck_ma',
-        'pfo_stck_ma_t',
-        'pfo_clfd_revs_stpr_ma',
-        'pfo_clfd_revs_stpr_ma_t',
-        'pfo_fund_infr_ht',
-        'pfo_fund_infr_ht_t',
-        'pfo_clfd_mip_ma',
-        'pfo_clfd_mip_ma_t'
+def query_table_filtered(
+    table_name: str,
+    mncm_code: str = None,
+    fund_code: str = None,
+    itms_code: str = None,
+    start_date: str = None,
+    end_date: str = None,
+) -> tuple[List[Dict], str]:
+    """테이블 데이터를 조건 필터링하여 조회 (컬럼 존재 여부 자동 확인)"""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    allowed_tables = [
+        'pfo_stck_ma', 'pfo_fund_infr_ht', 'pfo_fund_bs', 'pfo_fund_bs_t',
+        'pfo_stck_ma_t', 'pfo_fund_infr_ht_t', 'pfo_clfd_revs_stpr_ma',
+        'pfo_clfd_mip_ma', 'pfo_clfd_revs_stpr_ma_t', 'pfo_clfd_mip_ma_t',
+        'tru_fund_infr_bs', 'tru_fund_infr_bs_t', 'tru_stck_itms_ht', 'tru_stck_itms_ht_t'
     ]
+
+    if table_name not in allowed_tables:
+        conn.close()
+        return [], f"테이블 '{table_name}'은 조회할 수 없습니다."
+
+    try:
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        cols = {row[1] for row in cursor.fetchall()}
+
+        conditions, params = [], []
+        if mncm_code and 'mncm_code' in cols:
+            conditions.append("mncm_code = ?")
+            params.append(mncm_code)
+        if fund_code and 'fund_code' in cols:
+            conditions.append("fund_code = ?")
+            params.append(fund_code)
+        if itms_code and 'itms_code' in cols:
+            conditions.append("itms_code = ?")
+            params.append(itms_code)
+        if start_date and 'proc_date' in cols:
+            conditions.append("proc_date >= ?")
+            params.append(start_date)
+        if end_date and 'proc_date' in cols:
+            conditions.append("proc_date <= ?")
+            params.append(end_date)
+
+        where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+        cursor.execute(f"SELECT * FROM {table_name} {where} ORDER BY 1 DESC", params)
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows], ""
+    
+    except Exception as e:
+        conn.close()
+        return [], f"조회 오류: {str(e)}"
+
 
 def get_source_tables() -> List[str]:
     """원본 테이블(기존 테이블) 목록 반환"""
     return [
         'pfo_stck_ma',
         'pfo_fund_infr_ht',
+        'pfo_fund_bs',
         'pfo_clfd_revs_stpr_ma',
         'pfo_clfd_mip_ma',
         'tru_fund_infr_bs',

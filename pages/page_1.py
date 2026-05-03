@@ -1,6 +1,6 @@
 import streamlit as st
-from modules.page_1.link_injector import graph
-from modules.page_1.funcs import verification, verification_2
+from modules.agents.link_injector_adaptive import graph
+from modules.validation.link_validator import verification, verification_2
 
 st.title("dbLink 주입기")
 
@@ -11,10 +11,13 @@ if 'result' not in st.session_state:
 col1, col2 = st.columns([2, 2])
 
 with col1:
-    query = st.text_area("여기에 쿼리를 입력하세요:", height=550)
+    query = st.text_area("여기에 쿼리를 입력하세요:", height=550,  key="query",value = st.session_state.get('input_query'))
+    if query :
+        st.session_state['input_query'] = query
 
 with col2:
     st.text_area("결과 :", value=st.session_state.result.get('answer', ''), height=550, disabled=True)
+    
 
 # 맨 밑에 추가 텍스트 박스
 st.markdown("---")

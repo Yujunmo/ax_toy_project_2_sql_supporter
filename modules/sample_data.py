@@ -333,7 +333,46 @@ def extend_tru_stck_itms_ht():
     print(f"   추가 레코드: 456건 (57일 × 8종목)")
     print(f"   전체 tru_stck_itms_ht: 488건")
 
+def insert_pfo_fund_bs():
+    """pfo_fund_bs 샘플 데이터 삽입 (처리일자 없는 펀드 기본정보)"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    mncm_code = 'E3069'
+
+    funds = [
+        ('FND001', 'K-Tech 성장펀드',      '주식', '운용중', '20200101', '99991231', 100000000, 10500, 'KRW', 'PM001'),
+        ('FND002', 'Global 주식혼합펀드',   '혼합', '운용중', '20210301', '99991231', 250000000, 11200, 'KRW', 'PM002'),
+        ('FND003', '글로벌 기술주펀드',     '주식', '운용중', '20190615', '99991231', 180000000, 10800, 'KRW', 'PM003'),
+        ('F001',   '삼성 200',              '주식', '운용중', '20200101', '99991231', 500000000, 10000, 'KRW', 'MGR001'),
+        ('F002',   '삼성 성장형',           '주식', '운용중', '20210301', '99991231', 450000000, 10200, 'KRW', 'MGR002'),
+        ('F003',   '삼성 고배당',           '주식', '운용중', '20190615', '99991231', 320000000, 10100, 'KRW', 'MGR003'),
+        ('F004',   '삼성 글로벌 선진국',   '주식', '운용중', '20220101', '99991231', 280000000,   105, 'USD', 'MGR004'),
+        ('F005',   '삼성 배당',             '주식', '운용중', '20210615', '99991231', 410000000, 10300, 'KRW', 'MGR005'),
+        ('F006',   '삼성 기술',             '주식', '운용중', '20220101', '99991231', 370000000, 10150, 'KRW', 'MGR006'),
+        ('F007',   '삼성 에너지',           '주식', '운용중', '20220615', '99991231', 290000000, 10050, 'KRW', 'MGR007'),
+        ('F008',   '삼성 인프라',           '채권', '운용중', '20230101', '99991231', 350000000, 10080, 'KRW', 'MGR008'),
+        ('F009',   '삼성 글로벌 채권',     '채권', '운용중', '20230301', '99991231', 200000000,   102, 'USD', 'MGR009'),
+        ('F010',   '삼성 혼합',             '혼합', '운용중', '20230701', '99991231', 430000000, 10250, 'KRW', 'MGR010'),
+    ]
+
+    for fund_code, fund_name, fund_type, fund_status, setting_date, maturity_date, nav_amt, base_price, currency_code, manager_id in funds:
+        cursor.execute('''
+            INSERT OR REPLACE INTO pfo_fund_bs
+            (mncm_code, fund_code, fund_name, fund_type, fund_status,
+             setting_date, maturity_date, nav_amt, base_price, currency_code, manager_id, upd_dtm)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (mncm_code, fund_code, fund_name, fund_type, fund_status,
+              setting_date, maturity_date, nav_amt, base_price, currency_code, manager_id, '20260303150000'))
+
+    conn.commit()
+    conn.close()
+
+    print(f"✅ pfo_fund_bs 샘플 데이터 삽입 완료: {len(funds)}건")
+
+
 if __name__ == "__main__":
     insert_sample_data()
     insert_sample_data_new_tables()
     extend_tru_stck_itms_ht()
+    insert_pfo_fund_bs()

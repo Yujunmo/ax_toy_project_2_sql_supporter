@@ -1,6 +1,6 @@
 import streamlit as st
-from modules.page_2.link_injector import graph
-from modules.page_2.funcs import verification
+from modules.agents.link_injector_simple import graph
+from modules.validation.link_validator import verification_simple
 
 st.title("dbLink 주입기")
 
@@ -12,6 +12,7 @@ col1, col2 = st.columns([2, 2])
 
 with col1:
     query = st.text_area("여기에 쿼리를 입력하세요:", height=550)
+    
 
 with col2:
     st.text_area("결과 :", value=st.session_state.result.get('answer', ''), height=550, disabled=True)
@@ -42,7 +43,7 @@ if len(st.session_state.result) != 0 and st.session_state.result.get('answer') i
     
     if st.session_state.result.get("router_result") == "LINK_INSERTER" and st.button("검증하기"):
         if st.session_state.result.get('db_link') is not None :
-            is_valid = verification(query, st.session_state.result['answer'], st.session_state.result['db_link'])
+            is_valid = verification_simple(query, st.session_state.result['answer'], st.session_state.result['db_link'])
     
             if is_valid:
                 st.write("정상 : sql 링크 제거시 원본과 일치")

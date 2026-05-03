@@ -3,8 +3,8 @@ import streamlit as st
 def apply_css():
     # 페이지 레이아웃을 와이드로 설정
     st.set_page_config(layout="wide",
-                        initial_sidebar_state="expanded",
-                        page_title="잡무 좀 줄이자") 
+                        initial_sidebar_state="expanded"
+                        ) 
     # st.markdown("""
     # <style>
     # /* 상단 공백 제거 */

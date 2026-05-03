@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional, Tuple
-from modules.db_manager import get_table_pk_columns
+from modules.db.manager import get_table_pk_columns
 
 
 def build_where_clause(
@@ -101,7 +101,6 @@ WHERE {where_clause};"""
             'delete_sql': delete_sql,
             'insert_sql': insert_sql
         })
-
     return sql_list
 
 
