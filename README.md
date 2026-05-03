@@ -172,7 +172,7 @@ WHERE mncm_code = 'E3069' AND proc_date BETWEEN '20260301' AND '20260430'
 | **Table Extraction** | LangChain + LanGraph | SQL 쿼리에서 테이블명 추출 |
 | **SQL Generation** | Python + Jinja2 | WHERE 절 기반 DELETE/INSERT 자동 생성 |
 | **Execution** | SQLite3 | 데이터베이스 실행 및 트랜잭션 관리 |
-| **Styling** | Streamlit CSS | 신한금융 브랜드 컬러 (블루 #0054A4) |
+| **Styling** | Streamlit CSS  |
 
 ---
 
@@ -180,10 +180,9 @@ WHERE mncm_code = 'E3069' AND proc_date BETWEEN '20260301' AND '20260430'
 
 | 작업 | 소요 시간 |
 |------|---------|
-| 테이블 추출 (3개 테이블) | ~2초 |
-| SQL 생성 (3개 테이블) | ~1초 |
-| 데이터 마이그레이션 (1,000행) | ~1초 |
-
+| 테이블 추출 (LLM call + verification ) | ~2초 |
+| SQL 생성  | ~0초 |
+| migration | 테이블 인덱스 및 데이터량에 따라 다름 |
 ---
 
 ## 🛠️ 커스터마이징
