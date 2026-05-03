@@ -4,17 +4,73 @@ from modules.page_3.sql_generator import generate_sql_statements, format_sql_for
 from modules.page_3.sql_executor import execute_multiple_statements
 import pandas as pd
 
-st.title("TABLE 추출기 & 마이그레이션")
+# 신한금융 스타일 CSS
+st.markdown("""
+<style>
+:root {
+    --shinhan-primary: #0054A4;
+    --shinhan-hover: #003D7A;
+    --shinhan-dark: #002D5A;
+    --shinhan-light: #E8F1FB;
+}
+
+/* 버튼 스타일 */
+button {
+    background-color: #0054A4 !important;
+    color: white !important;
+    border: none !important;
+}
+
+button:hover {
+    background-color: #003D7A !important;
+    box-shadow: 0 4px 12px rgba(0, 84, 164, 0.3) !important;
+}
+
+button:active {
+    background-color: #002D5A !important;
+}
+
+/* 메트릭 카드 스타일 */
+[data-testid="metric-container"] {
+    border-left: 4px solid #0054A4 !important;
+    border-radius: 6px !important;
+    padding: 12px !important;
+}
+
+/* Info, Success 박스 색상 */
+.stAlert {
+    border-radius: 6px !important;
+}
+
+/* 섹션 제목 색상 */
+h2, h3 {
+    color: #0054A4 !important;
+}
+
+/* 입력 필드 포커스 색상 */
+input:focus, textarea:focus {
+    border-color: #0054A4 !important;
+}
+
+/* 메인 제목 스타일 */
+h1 {
+    color: #0054A4 !important;
+    font-weight: 700 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.title("🏦 데이터 이관 도구 - 신한금융")
 
 # ===== 상단 입력 섹션 =====
-st.subheader("이관 정보", divider="blue")
+st.markdown("---")
+st.subheader("📋 이관 정보")
 
 col1, col2, col3, col4, col5 = st.columns(5, gap="small")
 
 with col1:
     mncm_code = st.text_input(
         "운용사코드",
-        value="E3069",
         placeholder="예: E3069"
     )
     btn_col1, btn_col2 = st.columns(2)
@@ -26,8 +82,6 @@ with col1:
 with col2:
     fund_code = st.text_input(
         "펀드코드",
-        value="FND001",
-        placeholder="예: FND001"
     )
     btn_col3, btn_col4 = st.columns(2)     
     with btn_col3:
@@ -56,7 +110,6 @@ with col3:
     itms_code = st.text_input(
         "종목코드",
         value="",
-        placeholder="예: 005930"
     )
 
 with col4:
@@ -87,7 +140,8 @@ if mncm_code and fund_code and start_date and end_date:
     st.session_state.migration_params = migration_params
 
 # ===== 테이블 추출 섹션 =====
-st.subheader("테이블 추출", divider="blue")
+st.markdown("---")
+st.subheader("🔍 테이블 추출")
 
 col1, col2 = st.columns([2, 2])
 
@@ -95,7 +149,7 @@ with col1:
     query = st.text_area("여기에 쿼리를 입력하세요:", height=400)
 
 with col2:
-    st.subheader("추출 결과", divider="blue")
+    st.subheader("📊 추출 결과")
 
     if 'result_df' in st.session_state:
         col_title, col_count = st.columns([3, 1])
@@ -182,7 +236,8 @@ if generate_button:
 
 # ===== 생성된 SQL 표시 =====
 if 'sql_statements' in st.session_state and st.session_state.sql_statements:
-    st.subheader("생성된 SQL", divider="blue")
+    st.markdown("---")
+    st.subheader("⚙️ 생성된 SQL")
 
     # SQL 데이터 준비
     sql_data = []
@@ -328,7 +383,8 @@ if execute_all_button:
                     })
 
         # 결과 표시
-        st.subheader("실행 결과", divider="green")
+        st.markdown("---")
+        st.subheader("✅ 실행 결과")
 
         col1, col2, col3, col4 = st.columns(4)
         with col1:
