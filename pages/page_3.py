@@ -68,7 +68,7 @@ st.title("데이터 이관 도구")
 
 # ===== 상단 입력 섹션 =====
 st.markdown("---")
-st.subheader("📋 이관 정보")
+st.subheader("이관 정보")
 
 col1, col2, col3, col4, col5 = st.columns(5, gap="small")
 
@@ -87,9 +87,9 @@ with col2:
     fund_code = st.text_input(
         "펀드코드",
     )
-    btn_col3, btn_col4 = st.columns(2)     
+    btn_col3, btn_col4 = st.columns(2)
     with btn_col3:
-        execute_all_button = st.button("이관하기", use_container_width=True)
+        pass  # 이관하기 버튼은 생성된 SQL 섹션에 배치
     with btn_col4:
         reset_button = st.button("초기화", use_container_width=True)
 
@@ -107,7 +107,7 @@ if reset_button:
     if 'sql_selections' in st.session_state:
         del st.session_state.sql_selections
 
-    st.toast("✓ 초기화 완료!", icon="🔄")
+    st.toast("✓ 초기화 완료!")
     st.rerun()
 
 with col3:
@@ -145,7 +145,7 @@ if mncm_code and fund_code and start_date and end_date:
 
 # ===== 테이블 추출 섹션 =====
 st.markdown("---")
-st.subheader("🔍 테이블 추출")
+st.subheader("테이블 추출")
 
 col1, col2 = st.columns([2, 2])
 
@@ -153,7 +153,7 @@ with col1:
     query = st.text_area("여기에 쿼리를 입력하세요:", height=400)
 
 with col2:
-    st.subheader("📊 추출 결과")
+    st.subheader("추출 결과")
 
     if 'result_df' in st.session_state:
         col_title, col_count = st.columns([3, 1])
@@ -241,7 +241,11 @@ if generate_button:
 # ===== 생성된 SQL 표시 =====
 if 'sql_statements' in st.session_state and st.session_state.sql_statements:
     st.markdown("---")
-    st.subheader("⚙️ 생성된 SQL")
+    col_title, col_btn = st.columns([3, 1])
+    with col_title:
+        st.subheader("생성된 SQL")
+    with col_btn:
+        execute_all_button = st.button("이관하기", use_container_width=True, key="execute_all_main")
 
     # SQL 데이터 준비
     sql_data = []
@@ -388,7 +392,7 @@ if execute_all_button:
 
         # 결과 표시
         st.markdown("---")
-        st.subheader("✅ 실행 결과")
+        st.subheader("실행 결과")
 
         col1, col2, col3, col4 = st.columns(4)
         with col1:
