@@ -58,7 +58,7 @@ input:focus, textarea:focus {
 
 /* 메인 제목 스타일 */
 h1 {
-    color: #0054A4 !important;
+    color: #000000 !important;
     font-weight: 700 !important;
 }
 </style>
