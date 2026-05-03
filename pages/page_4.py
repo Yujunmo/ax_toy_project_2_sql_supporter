@@ -4,6 +4,32 @@ import pandas as pd
 
 st.set_page_config(layout="wide")
 
+# 신한금융 파란색 버튼 스타일
+st.markdown("""
+<style>
+/* Streamlit primary 버튼 - 신한금융 파란색 (#0054A4) */
+button {
+    background-color: #0054A4 !important;
+    color: white !important;
+    border: none !important;
+}
+
+button:hover {
+    background-color: #003D7A !important;
+    box-shadow: 0 4px 12px rgba(0, 84, 164, 0.3) !important;
+}
+
+button:active {
+    background-color: #002D5A !important;
+}
+
+button:focus {
+    outline: 2px solid #0054A4 !important;
+    outline-offset: 2px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("📊 기존 테이블 vs 이관 테이블 대조")
 st.caption("원본 테이블과 이관 대상 테이블의 데이터를 양쪽에서 동시에 비교합니다")
 
@@ -12,9 +38,8 @@ col1, col2, col3 = st.columns([2, 1, 1])
 
 with col1:
     source_table = st.selectbox(
-        "조회할 테이블 선택 (원본):",
-        options=get_source_tables(),
-        format_func=lambda x: f"{x} (원본)" if not x.endswith("_t") else x
+        "조회할 테이블 선택 :",
+        options=get_source_tables()
     )
 
 with col2:
@@ -58,7 +83,7 @@ if st.button("조회하기", type="primary", use_container_width=True):
             col_source, col_target = st.columns(2)
 
             with col_source:
-                st.subheader(f"📄 {source_table}")
+                st.subheader(f"📄 {source_table} [prod]")
                 if source_data:
                     df_source = pd.DataFrame(source_data)
                     st.dataframe(df_source, use_container_width=True, height=400)
@@ -67,7 +92,7 @@ if st.button("조회하기", type="primary", use_container_width=True):
                     st.info("데이터 없음")
 
             with col_target:
-                st.subheader(f"🎯 {target_table}")
+                st.subheader(f"🎯 {target_table} [test]")
                 if target_data:
                     df_target = pd.DataFrame(target_data)
                     st.dataframe(df_target, use_container_width=True, height=400)
