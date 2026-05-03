@@ -48,7 +48,7 @@ button:active {
 
 /* 섹션 제목 색상 */
 h2, h3 {
-    color: #0054A4 !important;
+    color: #000000 !important;
 }
 
 /* 입력 필드 포커스 색상 */
