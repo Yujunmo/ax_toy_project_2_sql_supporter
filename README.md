@@ -83,7 +83,9 @@ pip install -e .
 ```
 
 #### 3. 환경변수 설정
-`.env` 파일에 OpenAI API 키 설정
+`.streamlit/secretes.toml` 파일에 파일에 OpenAI API 키 설정:
+OPENAI_API_KEY=sk-...
+```
 
 #### 4. 앱 실행
 ```bash
