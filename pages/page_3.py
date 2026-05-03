@@ -212,14 +212,6 @@ if generate_button:
         
     else:
         try:
-            # 기존 SQL 데이터 삭제
-            if 'sql_statements' in st.session_state:
-                del st.session_state.sql_statements
-            if 'sql_edits' in st.session_state:
-                del st.session_state.sql_edits
-            if 'sql_selections' in st.session_state:
-                del st.session_state.sql_selections
-
             with st.spinner("SQL 작성 중.."):
                 sql_statements = generate_sql_statements(
                     extracted_tables=st.session_state.extracted_tables,
@@ -239,7 +231,12 @@ if generate_button:
                 # 하단 그리드 초기화 (체크박스 상태)
                 st.session_state.sql_selections = [True] * len(sql_statements)
 
-            st.toast("✓ 기존 SQL 삭제 후 새로운 SQL 작성 완료!", icon="✅")
+                # 위젯 key를 변경하여 새로운 텍스트에어를 강제로 재생성
+                if 'sql_version' not in st.session_state:
+                    st.session_state.sql_version = 0
+                st.session_state.sql_version += 1
+
+            st.toast("✓ SQL 작성 완료!", icon="✅")
             st.rerun()
 
         except Exception as e:
@@ -298,13 +295,12 @@ if 'sql_statements' in st.session_state and st.session_state.sql_statements:
 
         with col3:
             # 편집 가능한 텍스트 박스
-            default_sql = f"{stmt['delete_sql']}\n{stmt['insert_sql']}"
-
+            default_sql = f"{stmt['delete_sql']}\n{stmt['insert_sql']}"    
             edited_sql = st.text_area(
                 "SQL 편집",
                 value=st.session_state.sql_edits.get(idx, default_sql) if 'sql_edits' in st.session_state else default_sql,
                 height=150,
-                key=f"sql_textarea_{idx}",
+                key=f"sql_textarea_{idx}_{st.session_state.get('sql_version', 0)}",
                 label_visibility="collapsed"
             )
 
