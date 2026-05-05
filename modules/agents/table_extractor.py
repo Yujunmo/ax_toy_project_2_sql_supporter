@@ -53,10 +53,10 @@ def table_extract_node(state: AgentState) -> list[Table]:
 def verification_node(state:AgentState) -> AgentState:
     print('verification_node called...')
     
-    print(f'branch_A_answer: {state["branch_A_answer"]}')
-    print(f'branch_B_answer: {state["branch_B_answer"]}')
+    veri_1 = len(set(state["branch_A_answer"]) - set(state["branch_B_answer"]))
+    veri_2 = len(set(state["branch_B_answer"]) - set(state["branch_A_answer"]))
 
-    return {'verification': (state['branch_A_answer']) == (state['branch_B_answer'])}
+    return {'verification': veri_1 == 0 and veri_2 == 0 }
 
 def router_node(state:AgentState) :
     return state['verification']
