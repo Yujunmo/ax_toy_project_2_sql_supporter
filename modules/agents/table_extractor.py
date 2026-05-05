@@ -46,15 +46,15 @@ def table_extract_node(state: AgentState) -> list[Table]:
     result = LLM.with_structured_output(TableList).invoke(table_extract_prompt)
     
     # Table 객체 리스트 → 문자열 리스트로 변환
-    return {f'branch_{branch}_answer': sorted([table.table_name for table in result.tables])}
+    return {f'branch_{branch}_answer': set(sorted([table.table_name for table in set(result.tables)]))}
     
 
 # 검증 노드
 def verification_node(state:AgentState) -> AgentState:
     print('verification_node called...')
     
-    veri_1 = len(set(state["branch_A_answer"]) - set(state["branch_B_answer"]))
-    veri_2 = len(set(state["branch_B_answer"]) - set(state["branch_A_answer"]))
+    veri_1 = len((state["branch_A_answer"]) - (state["branch_B_answer"]))
+    veri_2 = len((state["branch_B_answer"]) - (state["branch_A_answer"]))
 
     return {'verification': veri_1 == 0 and veri_2 == 0 }
 
